@@ -1,8 +1,41 @@
 <html>
   <head>
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
   </head>
   <body>
+    <h1>
+      Epic weather forecaster
+    </h1>
+
+    <div>
+      <a href="send.html">Send to server page</a>
+    </div>
+
+    <div>
+      <ul>
+        <li>
+          <button class="forecastbtn" value="Horsens">
+            Horsens
+          </button>
+          <button class="forecastbtn" value="Aarhus">
+            Aarhus
+          </button>
+          <button class="forecastbtn" value="Copenhagen">
+            Copenhagen
+          </button>
+        </li>
+      </ul>
+    </div>
+
+
+    <h1 id="nextForecast">Next forecast</h1>
+    <p id="city"></p>
+    <p id="nextForecastTime"></p>
+    <p id="nextForecastType"></p>
+    <p id="nextForecastFrom"></p>
+    <p id="nextForecastTo"></p>
+    <p id="nextForecastUnit"></p>
     
+    <script src="fetchController.js"></script>
   </body>
 </html>
