@@ -1,13 +1,23 @@
 import WeatherData from "./models/WeatherData.js";
+import Temperature from "./models/Temperature.js";
+import TemperaturePrediction from "./models/TemperaturePrediction.js";
+import PrecipitationPrediction from "./models/PrecipitationPrediction.js";
+import WindPrediction from "./models/WindPrediction.js";
+import { displayForecasts, displayMaxTemp } from "./displaystuff.js";
 
 $('.forecastbtn').click(async function () {
   var thebuttonclicked = $(this).attr("value");
   var response = await getForecast(`${thebuttonclicked}`);
   console.log(response);
+
+  handleForecasts(thebuttonclicked)
   // console.log("Haj");
 
   // getMinTemp(`${thebuttonclicked}`);
-  convertToObject(response)
+  // convertToObject(response)
+  let max = await getMaxTemp(`${thebuttonclicked}`)
+  displayMaxTemp(max);
+  console.log("max: " + max);
 
   //var minTemp = await getMinTemp(`${thebuttonclicked}`)
   //console.log("Min: " + minTemp)
@@ -47,22 +57,24 @@ async function getForecast(city) {
   }
 }
 
-async function convertToObject(response) {
-  let weatherData = WeatherData(2, 2, 2, 2, 2);
-  console.log(weatherData.getType())
+async function handleForecasts(city) {
+  let temps = [];
+  let precipitations = [];
+  let winds = [];
 
-  response.map((item) => {
+  let resp = await getForecast(city)
+
+  resp.map((item) => {
     switch (item.type) {
       case "temperature": {
-
-        console.log("Temperature: " + item.from + item.unit + " to " + item.to + item.unit);
+        temps.push(TemperaturePrediction(item.time, item.place, item.to, item.from, item.unit));
         break;
       }
       case "precipitation": {
-
+        // precipitations.push(PrecipitationPrediction(item.time, item.place, item.to, item.from, item.precipitations_types[0], item.unit, item.precipitations_types));
       }
       case "wind speed": {
-
+        winds.push(WindPrediction(item.time, item.place, item.to, item.from, item.unit));
       }
       case "cloud coverage": {
 
@@ -72,21 +84,53 @@ async function convertToObject(response) {
       }
     }
   });
+
+  displayForecasts(temps, precipitations, winds);
 }
 
+//AverageWindSpeed
 
 
 async function getMaxTemp(city) {
   let weatherData = await getForecast(city);
 
+  let max = undefined;
+  for (let x in weatherData) {
+    let dataObj = weatherData[x];
+    if (dataObj.type == "temperature") {
+      let tmp = new Temperature(dataObj.time, dataObj.place, dataObj.to, dataObj.type, dataObj.unit);
+      tmp.convertToC();
+      let to = tmp.getValue();
 
-  let max = -99;
-  for (x in weatherData) {
-    let to = weatherData[x].to;
-    if (to > max) {
-      max = to;
+      if (max === undefined || to > max) {
+        max = to;
+      }
     }
   }
   return max;
 
 }
+
+
+
+
+//async function getAverageWindSpeed(city) {
+//let weatherData = await getForecast(city);
+
+//let max = -99;
+//for (x in weatherData) {
+// x = weatherData[x];
+//tmp = Temperature(x.time, x.place, x.value, x.type, unit)
+
+// let to = weatherData[x].to;
+// if (to > tmp.to) {
+//  max = tmp.to;
+// }
+//}
+//return max;
+
+//}
+
+
+
+
