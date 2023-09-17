@@ -1,4 +1,4 @@
-import { WeatherData } from "./models/WeatherData.js";
+import WeatherData from "./models/WeatherData.js";
 
 $('.forecastbtn').click(async function () {
   var thebuttonclicked = $(this).attr("value");
@@ -48,8 +48,8 @@ async function getForecast(city) {
 }
 
 async function convertToObject(response) {
-  let weatherData = WeatherData(response.time, response.type, response.value, response.unit, response.place);
-  console.log(weatherData)
+  let weatherData = WeatherData(2, 2, 2, 2, 2);
+  console.log(weatherData.getType())
 
   response.map((item) => {
     switch (item.type) {
@@ -78,6 +78,7 @@ async function convertToObject(response) {
 
 async function getMaxTemp(city) {
   let weatherData = await getForecast(city);
+
 
   let max = -99;
   for (x in weatherData) {
