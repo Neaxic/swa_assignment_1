@@ -18,14 +18,10 @@ $('.forecastbtn').click(async function () {
   handleForecasts(thebuttonclicked)
   let city = `${thebuttonclicked}`;
 
-  let max = await getMaxTemp(city)
-  let min = await getMinTemp(city)
-  let avg = await getAverageWindSpeed(city);
-  let precipition = await getTotalPrecipitation(city)
-  displayMaxTemp(max);
-  displayMinTemp(min);
-  displayAverageWindSpeed(avg);
-  displayTotalPrecipitation(precipition);
+  getMaxTemp(city)
+  getMinTemp(city)
+  getAverageWindSpeed(city);
+  getTotalPrecipitation(city)
 });
 
 
@@ -90,7 +86,6 @@ async function handleForecasts(city) {
 
     displayForecasts(temps, precipitations, windSpeeds, cloudCoverage);
   }, city)
-
 }
 
 //AverageWindSpeed
@@ -111,7 +106,8 @@ async function getMaxTemp(city) {
         }
       }
     }
-    return max;
+
+    displayMaxTemp(max);
   }, city);
 
 
@@ -131,7 +127,7 @@ async function getMinTemp(city) {
         }
       }
     }
-    return min;
+    displayMinTemp(min);
   }, city);
 
 }
@@ -152,31 +148,31 @@ async function getTotalPrecipitation(city) {
         _totalprecipitation += test;
       }
     }
-    console.log("Total precipitation for the last day ", _totalprecipitation);
-    return _totalprecipitation;
+    displayTotalPrecipitation(_totalprecipitation);
   }, city);
 
 }
 
 
 async function getAverageWindSpeed(city) {
-  let weatherData1 = await getData(city);
-  let _totalWindSpeed = 0;
-  let count = 0;
-  for (let i in weatherData1) {
-    let dataObj = weatherData1[i];
-    //console.log("dataObj Avg Wind:", dataObj);
-    if (dataObj.type == "wind speed") {
-      let windtemp = new Wind(dataObj.time, dataObj.place, dataObj.value, dataObj.unit);
-      windtemp.convertToMph();
-      let test = windtemp.getValue();
-      //console.log("Wind speed0", test)
-      _totalWindSpeed += test;
-      count++;
+  getData((weatherData1) => {
+    let _totalWindSpeed = 0;
+    let count = 0;
+    for (let i in weatherData1) {
+      let dataObj = weatherData1[i];
+      //console.log("dataObj Avg Wind:", dataObj);
+      if (dataObj.type == "wind speed") {
+        let windtemp = new Wind(dataObj.time, dataObj.place, dataObj.value, dataObj.unit);
+        windtemp.convertToMph();
+        let test = windtemp.getValue();
+        //console.log("Wind speed0", test)
+        _totalWindSpeed += test;
+        count++;
+      }
     }
-  }
 
-  let _averageWindSpeed = _totalWindSpeed / count;
-  console.log("Avg ", _averageWindSpeed);
-  return _averageWindSpeed;
+    let _averageWindSpeed = _totalWindSpeed / count;
+    displayAverageWindSpeed(_averageWindSpeed);
+  }, city)
+
 }

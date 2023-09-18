@@ -637,34 +637,18 @@ var XMLHttpRequest = require('xhr2');
 var xhr = new XMLHttpRequest();
 var baseUrl = "http://localhost:8080";
 $('.forecastbtn').click( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-  var thebuttonclicked, city, max, min, avg, precipition;
+  var thebuttonclicked, city;
   return _regeneratorRuntime().wrap(function _callee$(_context) {
     while (1) switch (_context.prev = _context.next) {
       case 0:
         thebuttonclicked = $(this).attr("value");
         handleForecasts(thebuttonclicked);
         city = "".concat(thebuttonclicked);
-        _context.next = 5;
-        return getMaxTemp(city);
-      case 5:
-        max = _context.sent;
-        _context.next = 8;
-        return getMinTemp(city);
-      case 8:
-        min = _context.sent;
-        _context.next = 11;
-        return getAverageWindSpeed(city);
-      case 11:
-        avg = _context.sent;
-        _context.next = 14;
-        return getTotalPrecipitation(city);
-      case 14:
-        precipition = _context.sent;
-        (0, _displaystuff.displayMaxTemp)(max);
-        (0, _displaystuff.displayMinTemp)(min);
-        (0, _displaystuff.displayAverageWindSpeed)(avg);
-        (0, _displaystuff.displayTotalPrecipitation)(precipition);
-      case 19:
+        getMaxTemp(city);
+        getMinTemp(city);
+        getAverageWindSpeed(city);
+        getTotalPrecipitation(city);
+      case 7:
       case "end":
         return _context.stop();
     }
@@ -800,7 +784,7 @@ function _getMaxTemp() {
                 }
               }
             }
-            return max;
+            (0, _displaystuff.displayMaxTemp)(max);
           }, city);
         case 1:
         case "end":
@@ -831,7 +815,7 @@ function _getMinTemp() {
                 }
               }
             }
-            return min;
+            (0, _displaystuff.displayMinTemp)(min);
           }, city);
         case 1:
         case "end":
@@ -862,8 +846,7 @@ function _getTotalPrecipitation() {
                 _totalprecipitation += test;
               }
             }
-            console.log("Total precipitation for the last day ", _totalprecipitation);
-            return _totalprecipitation;
+            (0, _displaystuff.displayTotalPrecipitation)(_totalprecipitation);
           }, city);
         case 1:
         case "end":
@@ -878,30 +861,28 @@ function getAverageWindSpeed(_x9) {
 }
 function _getAverageWindSpeed() {
   _getAverageWindSpeed = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee9(city) {
-    var weatherData1, _totalWindSpeed, count, i, dataObj, windtemp, test, _averageWindSpeed;
     return _regeneratorRuntime().wrap(function _callee9$(_context9) {
       while (1) switch (_context9.prev = _context9.next) {
         case 0:
-          _context9.next = 2;
-          return getData(city);
-        case 2:
-          weatherData1 = _context9.sent;
-          _totalWindSpeed = 0;
-          count = 0;
-          for (i in weatherData1) {
-            dataObj = weatherData1[i]; //console.log("dataObj Avg Wind:", dataObj);
-            if (dataObj.type == "wind speed") {
-              windtemp = new _Wind.default(dataObj.time, dataObj.place, dataObj.value, dataObj.unit);
-              windtemp.convertToMph();
-              test = windtemp.getValue(); //console.log("Wind speed0", test)
-              _totalWindSpeed += test;
-              count++;
+          getData(function (weatherData1) {
+            var _totalWindSpeed = 0;
+            var count = 0;
+            for (var i in weatherData1) {
+              var dataObj = weatherData1[i];
+              //console.log("dataObj Avg Wind:", dataObj);
+              if (dataObj.type == "wind speed") {
+                var windtemp = new _Wind.default(dataObj.time, dataObj.place, dataObj.value, dataObj.unit);
+                windtemp.convertToMph();
+                var test = windtemp.getValue();
+                //console.log("Wind speed0", test)
+                _totalWindSpeed += test;
+                count++;
+              }
             }
-          }
-          _averageWindSpeed = _totalWindSpeed / count;
-          console.log("Avg ", _averageWindSpeed);
-          return _context9.abrupt("return", _averageWindSpeed);
-        case 9:
+            var _averageWindSpeed = _totalWindSpeed / count;
+            (0, _displaystuff.displayAverageWindSpeed)(_averageWindSpeed);
+          }, city);
+        case 1:
         case "end":
           return _context9.stop();
       }

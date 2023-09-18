@@ -6,9 +6,9 @@ import TemperaturePrediction from "./models/TemperaturePrediction.js";
 import PrecipitationPrediction from "./models/PrecipitationPrediction.js";
 import WindPrediction from "./models/WindPrediction.js";
 import CloudCoveragePrediction from "./models/WindPrediction.js";
-import { displayForecasts, displayMinTemp, displayMaxTemp, displayAverageWindSpeed, displayTotalPrecipitation } from "./displaystuff.js";
+import { displayForecasts, displayMinTemp, displayMaxTemp, displayAverageWindSpeed, displayTotalPrecipitation, displayLatestMeasurement, displayLatestTemperature, displayLatestWindSpeed, displayLatestPrecipitation } from "./displaystuff.js";
 
-$('#sendbutton').click(async function () {
+$('.sendbutton').click(async function () {
   //Imaginary input from user
   let jsonObject = WeatherData("2019-07-30T10:07:00.000Z", "temperature", 21, "C", "Aarhus");
   let responseFromPost = await postData(jsonObject)
@@ -31,7 +31,10 @@ $('.forecastbtn').click(async function () {
   displayAverageWindSpeed(avg);
   let precipition = await getTotalPrecipitation(city)
   displayTotalPrecipitation(precipition);
-  let last = await getLasestMeasurements(city)
+  let last = await getLasestMeasurements(city);
+  displayLatestTemperature(last.latestTemperature);
+  displayLatestPrecipitation(last.latestPrecipitation);
+  displayLatestWindSpeed(last.latestWindSpeed);
 
 
 });
@@ -82,9 +85,7 @@ async function handleForecasts(city) {
 
   }
   );
-
   console.log("fetch: ", cloudCoverage)
-
   displayForecasts(temps, precipitations, windSpeeds, cloudCoverage);
 }
 
@@ -142,23 +143,23 @@ async function getLasestMeasurements(city) {
     if (dataObj.type === "temperature") {
       let temp = new Temperature(dataObj.time, dataObj.place, dataObj.value, dataObj.unit);
 
-      temp.convertToCelsius();
-      latestTemperature = temp;
-      console.log("latestTemperature", latestTemperature)
+      temp.convertToC();
+      latestTemperature = temp.getValue();
+      //console.log("latestTemperature", latestTemperature)
     }
 
     if (dataObj.type === "precipitation") {
-      let precip = new Precipitation(dataObj.time, dataObj.place, dataObj.value, dataObj.unit);
+      let precip = new precipitation(dataObj.time, dataObj.place, dataObj.value, dataObj.unit);
       precip.convertToMM();
-      latestPrecipitation = precip;
-      console.log("latestPrecipitation", latestPrecipitation)
+      latestPrecipitation = precip.getValue();
+      //console.log("latestPrecipitation", latestPrecipitation)
     }
 
     if (dataObj.type === "wind speed") {
       let wind = new Wind(dataObj.time, dataObj.place, dataObj.value, dataObj.unit);
       wind.convertToMph();
-      latestWindSpeed = wind;
-      console.log("latestWindSpeed", latestWindSpeed)
+      latestWindSpeed = wind.getValue();
+      //console.log("latestWindSpeed", latestWindSpeed)
     }
   }
 
@@ -205,7 +206,7 @@ async function getAverageWindSpeed(city) {
   }
 
   let _averageWindSpeed = _totalWindSpeed / count;
-  console.log("Avg ", _averageWindSpeed);
+  //console.log("Avg ", _averageWindSpeed);
   return _averageWindSpeed;
 }
 
