@@ -22,7 +22,7 @@ function WeatherPrediction(time, type, max, min, unit, place) {
 
   const getUnit = () => unit;
   //Return mangler en match forstår ikke lige hvad der skal ske
-  return { getType, getUnit, getMax, getMin, ...event };
+  return { matches, getType, getUnit, getMax, getMin, ...event };
 }
 
 export default WeatherPrediction;

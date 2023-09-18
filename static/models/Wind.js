@@ -1,5 +1,5 @@
 import WeatherData from "./WeatherData";
-function Wind(unit, value) {
+function Wind(time, place, value, type, unit) {
   let weatherData = WeatherData(time, place, value, type, unit);
   const getDirection = () => {
     return "Aner det ikke";
