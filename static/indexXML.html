@@ -1,0 +1,79 @@
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+  </head>
+  <style>
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    td,
+    th {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+
+    tr:nth-child(even) {
+      background-color: #dddddd;
+    }
+
+    .tableWrapper {
+      display: flex;
+      gap: 32px;
+    }
+  </style>
+
+  <body>
+    <h1>Epic weather forecaster</h1>
+
+    <div>
+      <a href="send.html">Send to server page</a>
+      <button class="networkBtn" value="fetch">Fetch</button>
+      <button class="networkBtn" value="xml">XML</button>
+    </div>
+
+    <div>
+      <ul>
+        <li>
+          <button class="forecastbtn" value="Horsens">Horsens</button>
+          <button class="forecastbtn" value="Aarhus">Aarhus</button>
+          <button class="forecastbtn" value="Copenhagen">Copenhagen</button>
+        </li>
+      </ul>
+    </div>
+
+    <div>
+      <h3>Weather data</h3>
+      <div id="weatherdata"></div>
+    </div>
+
+    <div>
+      <h2>Forecasts</h2>
+      <div style="display: flex; gap: 24px">
+        <div id="maxTemp"></div>
+        <div id="minTemp"></div>
+        <div id="avgWind"></div>
+        <div id="TotalPrecipitation"></div>
+      </div>
+
+      <div id="forecasts" class="tableWrapper" style="margin-top: 32px">
+        <table id="tempTable"></table>
+        <table id="precipitationTable"></table>
+        <table id="windTable"></table>
+        <table id="cloudTable"></table>
+      </div>
+    </div>
+
+    <p id="city"></p>
+    <p id="nextForecastTime"></p>
+    <p id="nextForecastType"></p>
+    <p id="nextForecastFrom"></p>
+    <p id="nextForecastTo"></p>
+    <p id="nextForecastUnit"></p>
+
+    <script src="xmlhttpController.js"></script>
+  </body>
+</html>

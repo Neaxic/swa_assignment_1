@@ -8,10 +8,11 @@ import WindPrediction from "./models/WindPrediction.js";
 import CloudCoveragePrediction from "./models/WindPrediction.js";
 import { displayForecasts, displayMinTemp, displayMaxTemp, displayAverageWindSpeed, displayTotalPrecipitation } from "./displaystuff.js";
 
-import proxyGetForecast from "./networkController.js";
-
-$(document).ready(function () { //FOR TESTING
-
+$('#sendbutton').click(async function () {
+  //Imaginary input from user
+  let jsonObject = WeatherData("2019-07-30T10:07:00.000Z", "temperature", 21, "C", "Aarhus");
+  let responseFromPost = await postData(jsonObject)
+  console.log(responseFromPost)
 });
 
 $('.forecastbtn').click(async function () {
@@ -19,53 +20,20 @@ $('.forecastbtn').click(async function () {
   var response = await getForecast(`${thebuttonclicked}`);
 
   handleForecasts(thebuttonclicked)
-  // console.log("Haj");
 
-  // getMinTemp(`${thebuttonclicked}`);
-  // convertToObject(response)
   let city = `${thebuttonclicked}`;
 
   let max = await getMaxTemp(city)
-  let min = await getMinTemp(city)
-  let avg = await getAverageWindSpeed(city);
-  let precipition = await getTotalPrecipitation(city)
   displayMaxTemp(max);
+  let min = await getMinTemp(city)
   displayMinTemp(min);
+  let avg = await getAverageWindSpeed(city);
   displayAverageWindSpeed(avg);
+  let precipition = await getTotalPrecipitation(city)
   displayTotalPrecipitation(precipition);
-
-  console.log("Diller")
-  let jsonObject = WeatherData("2019-07-30T10:07:00.000Z", "temperature", 21, "C", "Aarhus");
-  let responseFromPost = await postData(jsonObject)
-  console.log(responseFromPost)
+  let last = await getLasestMeasurements(city)
 
 
-  //var minTemp = await getMinTemp(`${thebuttonclicked}`)
-  //console.log("Min: " + minTemp)
-  //var maxTemp = await getMaxTemp(`${thebuttonclicked}`)
-  //console.log("Max: " + maxTemp)
-  // console.log(getForecast(`${thebuttonclicked}`));
-  /* $.ajax({
-     url: `http://localhost:8080/forecast/${thebuttonclicked}`,
-     method: "GET",
-     dataType: "json", // Expected response data type
-     success: function(data) {
-       //NEXT 24 HOURS IN x CITY
-       console.log("Response Data:", data);
-
-       $("#nextForecast").text("Next forecast in " + thebuttonclicked);
-       $("#nextForecastFrom").text(data[0].type + ": from " + data[0].from + data[0].unit + " to " + data[0].to + data[0].unit);
-
-       console.log(data[0].type);
-       console.log(data[0].from);
-       console.log(data[0].to);
-       console.log(data[0].unit);
-       console.log(data[0].time);
-     },
-     error: function(xhr, status, error) {
-       console.error("AJAX Error:", status, error);
-     }
-   });*/
 });
 
 async function getData(city) {
@@ -120,8 +88,6 @@ async function handleForecasts(city) {
   displayForecasts(temps, precipitations, windSpeeds, cloudCoverage);
 }
 
-//AverageWindSpeed
-
 
 async function getMaxTemp(city) {
   let weatherData = await getForecast(city);
@@ -162,6 +128,48 @@ async function getMinTemp(city) {
 }
 
 
+
+async function getLasestMeasurements(city) {
+  let weatherData = await getData(city);
+
+  let latestTemperature;
+  let latestPrecipitation;
+  let latestWindSpeed;
+
+  for (let i in weatherData) {
+    let dataObj = weatherData[i];
+
+    if (dataObj.type === "temperature") {
+      let temp = new Temperature(dataObj.time, dataObj.place, dataObj.value, dataObj.unit);
+
+      temp.convertToCelsius();
+      latestTemperature = temp;
+      console.log("latestTemperature", latestTemperature)
+    }
+
+    if (dataObj.type === "precipitation") {
+      let precip = new Precipitation(dataObj.time, dataObj.place, dataObj.value, dataObj.unit);
+      precip.convertToMM();
+      latestPrecipitation = precip;
+      console.log("latestPrecipitation", latestPrecipitation)
+    }
+
+    if (dataObj.type === "wind speed") {
+      let wind = new Wind(dataObj.time, dataObj.place, dataObj.value, dataObj.unit);
+      wind.convertToMph();
+      latestWindSpeed = wind;
+      console.log("latestWindSpeed", latestWindSpeed)
+    }
+  }
+
+  return {
+    latestTemperature,
+    latestPrecipitation,
+    latestWindSpeed,
+  };
+}
+
+
 async function getTotalPrecipitation(city) {
   let wd = await getData(city);
   let _totalprecipitation = 0;
@@ -170,11 +178,9 @@ async function getTotalPrecipitation(city) {
     let dataObj = wd[i];
 
     if (dataObj.type == "precipitation") {
-      console.log("dataObj Avg Wind:", dataObj);
       let precipitationtemp = new precipitation(dataObj.time, dataObj.place, dataObj.value, dataObj.unit);
       precipitationtemp.convertToMM();
       let test = precipitationtemp.getValue();
-      //console.log("Wind speed0", test)
       _totalprecipitation += test;
     }
   }
@@ -189,12 +195,10 @@ async function getAverageWindSpeed(city) {
   let count = 0;
   for (let i in weatherData1) {
     let dataObj = weatherData1[i];
-    //console.log("dataObj Avg Wind:", dataObj);
     if (dataObj.type == "wind speed") {
       let windtemp = new Wind(dataObj.time, dataObj.place, dataObj.value, dataObj.unit);
       windtemp.convertToMph();
       let test = windtemp.getValue();
-      //console.log("Wind speed0", test)
       _totalWindSpeed += test;
       count++;
     }
@@ -205,24 +209,24 @@ async function getAverageWindSpeed(city) {
   return _averageWindSpeed;
 }
 
-
-
-/*
-"type": "temperature",
-  "time": "2019-07-30T10:07:00.000Z",
-  "place": "Aarhus",
-  "value": 21,
-  "unit": "C"}, */
 async function postData(jsonObject) {
   let url = 'http://localhost:8080/data';
-  console.log(JSON.stringify(jsonObject));
+  //Bad method to covert to JSON, but couldnt make JSON.Stringfy work
+  const jsonObject2 = {
+    type: jsonObject.getType(),
+    time: jsonObject.getTime(),
+    place: jsonObject.getPlace(),
+    value: jsonObject.getValue(),
+    unit: jsonObject.getUnit()
+  };
+  let jsonString = JSON.stringify(jsonObject2);
   try {
     let response = await fetch(url, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json', // Specify that you're sending JSON data
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(jsonObject), // Convert the JavaScript object to a JSON string
+      body: jsonString,
     });
 
     if (!response.ok) {
@@ -234,3 +238,9 @@ async function postData(jsonObject) {
     console.error('Error:', error);
   }
 }
+
+
+
+
+
+

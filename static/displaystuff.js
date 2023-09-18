@@ -138,6 +138,36 @@ export function displayTotalPrecipitation(TotalPrecipitation) {
     div.appendChild(table);
 }
 
+export function displayLatestTemperature(temp) {
+    displayLatestMeasurement("latestTemperature", "Max Temperature", temp);
+}
+
+export function displayLatestPrecipitation(precip) {
+    displayLatestMeasurement("latestPrecipitation", "Latest Precipitation", precip);
+}
+
+export function displayLatestWindSpeed(windSpeed) {
+    displayLatestMeasurement("latestWindSpeed", "Latest Wind Speed", windSpeed);
+}
+
+function displayLatestMeasurement(divId, titleText, value) {
+    let div = document.getElementById(divId);
+    div.innerHTML = "";
+
+    let title = document.createElement("h4");
+    title.innerHTML = titleText;
+    let table = document.createElement("table");
+
+    let row = document.createElement("tr");
+    let cell = document.createElement("td");
+    cell.innerHTML = value;
+
+    row.appendChild(cell);
+    table.appendChild(row);
+
+    div.appendChild(title);
+    div.appendChild(table);
+}
 
 
 
