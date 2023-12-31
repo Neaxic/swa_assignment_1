@@ -1,5 +1,5 @@
 import Event from "./Event";
-
+//Det her er en factory
 function WeatherData(time, type, value, unit, place) {
   let event = Event(time, place);
 
